@@ -1,7 +1,7 @@
 // JavaScript Black Hole Simulation
 // Bypasses WebAssembly issues while using the same visual effects
 
-console.log('🕳️ Loading JavaScript Black Hole Simulation v2.0...');
+console.log('🕳️ Loading JavaScript Black Hole Simulation v2.1 - GitHub Deploy...');
 
 class BlackHoleSimulation {
     constructor(canvas) {
