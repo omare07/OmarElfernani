@@ -174,11 +174,6 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div>Loading Schwarzschild Black Hole Model...</div>
-    </div>
 
     <!-- Toggle controls removed - using React overlay -->
 
@@ -322,7 +317,6 @@
                 const success = await simulation.init();
                 if (success) {
                     simulation.start();
-                    document.getElementById('loading').style.display = 'none';
                     console.log('🌟 Black hole simulation ready!');
                     
                     // Add mouse wheel zoom
