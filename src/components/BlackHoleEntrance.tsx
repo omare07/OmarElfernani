@@ -58,7 +58,7 @@ const BlackHoleEntrance: React.FC = () => {
       clearTimeout(fallbackTimeout1);
       clearTimeout(fallbackTimeout2);
     };
-  }, []);
+  }, [isLoaded]);
 
   const handleEnterSite = () => {
     setIsBeingSucked(true);
