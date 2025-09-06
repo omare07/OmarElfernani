@@ -163,9 +163,11 @@ code {
   /* Dark mode styles - Completely redesigned with new color palette */
   body.dark-mode {
     background: url('./pixaltedBlackHole.gif') center 30% fixed;
-    background-size: 120%;
+    background-size: cover;
+    background-repeat: no-repeat;
     color: #E0E0E0;
     transition: all 0.3s ease;
+    min-height: 100vh;
   }
 
   body.dark-mode::before {
@@ -295,6 +297,194 @@ code {
     to {
       text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5);
     }
+  }
+
+  /* Retro Pixel Animations */
+  .pixel-glow {
+    animation: pixel-pulse 2s ease-in-out infinite;
+  }
+
+  .pixel-blink {
+    animation: pixel-blink 1.5s infinite;
+  }
+
+  .pixel-slide {
+    animation: pixel-slide 3s ease-in-out infinite;
+  }
+
+  .scanlines {
+    position: relative;
+  }
+
+  .scanlines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      transparent 50%,
+      rgba(0, 255, 0, 0.03) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline-move 0.1s linear infinite;
+  }
+
+  .retro-crt {
+    position: relative;
+  }
+
+  .retro-crt::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      0deg,
+      transparent 74%,
+      rgba(32, 128, 32, 0.02) 75%,
+      rgba(32, 128, 32, 0.02) 76%,
+      transparent 77%
+    );
+    background-size: 100% 3px;
+    pointer-events: none;
+    animation: crt-flicker 0.15s infinite linear;
+  }
+
+  .retro-gold {
+    color: #D4AF37;
+  }
+
+  .retro-beige {
+    color: #F5F5DC;
+  }
+
+  @keyframes pixel-pulse {
+    0%, 100% {
+      text-shadow:
+        1px 1px 0px #D4AF37,
+        2px 2px 0px rgba(212, 175, 55, 0.5),
+        3px 3px 0px rgba(212, 175, 55, 0.25);
+      transform: scale(1);
+    }
+    50% {
+      text-shadow:
+        2px 2px 0px #D4AF37,
+        4px 4px 0px rgba(212, 175, 55, 0.7),
+        6px 6px 0px rgba(212, 175, 55, 0.4);
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes pixel-blink {
+    0%, 80% {
+      opacity: 1;
+      color: #D4AF37;
+    }
+    85%, 95% {
+      opacity: 0;
+      color: transparent;
+    }
+    100% {
+      opacity: 1;
+      color: #D4AF37;
+    }
+  }
+
+  @keyframes pixel-slide {
+    0%, 100% {
+      transform: translateX(0px);
+      text-shadow: 1px 1px 0px rgba(212, 175, 55, 0.5);
+    }
+    25% {
+      transform: translateX(2px);
+      text-shadow: 2px 2px 0px rgba(212, 175, 55, 0.7);
+    }
+    50% {
+      transform: translateX(0px);
+      text-shadow: 1px 1px 0px rgba(212, 175, 55, 0.5);
+    }
+    75% {
+      transform: translateX(-2px);
+      text-shadow: -1px 1px 0px rgba(212, 175, 55, 0.7);
+    }
+  }
+
+  @keyframes scanline-move {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 4px;
+    }
+  }
+
+  @keyframes crt-flicker {
+    0% {
+      opacity: 1;
+    }
+    98% {
+      opacity: 1;
+    }
+    99% {
+      opacity: 0.98;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* Retro button pixel effect */
+  .retro-button {
+    position: relative;
+    background: #D4AF37;
+    border: 3px solid #B8860B;
+    box-shadow:
+      inset 2px 2px 0px rgba(255, 255, 255, 0.3),
+      inset -2px -2px 0px rgba(0, 0, 0, 0.3),
+      3px 3px 0px #8B7355;
+    transition: all 0.1s ease;
+  }
+
+  .retro-button:hover {
+    transform: translate(1px, 1px);
+    box-shadow:
+      inset 2px 2px 0px rgba(255, 255, 255, 0.3),
+      inset -2px -2px 0px rgba(0, 0, 0, 0.3),
+      2px 2px 0px #8B7355;
+  }
+
+  .retro-button:active {
+    transform: translate(2px, 2px);
+    box-shadow:
+      inset 2px 2px 0px rgba(0, 0, 0, 0.3),
+      inset -2px -2px 0px rgba(255, 255, 255, 0.3),
+      1px 1px 0px #8B7355;
+  }
+
+  /* Pixel loading effect */
+  .pixel-loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: #D4AF37;
+    animation: pixel-load 1s infinite steps(8);
+  }
+
+  @keyframes pixel-load {
+    0% { background: #D4AF37; }
+    12.5% { background: #F0C040; }
+    25% { background: #FFD700; }
+    37.5% { background: #F0C040; }
+    50% { background: #D4AF37; }
+    62.5% { background: #B8860B; }
+    75% { background: #8B7355; }
+    87.5% { background: #B8860B; }
+    100% { background: #D4AF37; }
   }
 
   /* Dark mode accent text - swapped colors for contrast with light mode */
