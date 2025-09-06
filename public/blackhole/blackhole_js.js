@@ -79,6 +79,13 @@ class BlackHoleSimulation {
             
             console.log('✅ JavaScript Black Hole Simulation initialized!');
             this.initialized = true;
+            
+            // Send message to parent window that simulation is loaded
+            if (window.parent && window.parent !== window) {
+                console.log('📡 Sending blackhole-loaded message to parent');
+                window.parent.postMessage('blackhole-loaded', '*');
+            }
+            
             return true;
             
         } catch (error) {

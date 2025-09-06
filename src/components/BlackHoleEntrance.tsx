@@ -23,6 +23,11 @@ const BlackHoleEntrance: React.FC = () => {
 
     // Listen for messages from the Black Hole simulation
     const handleMessage = (event: MessageEvent) => {
+      // Accept messages from same origin or iframe
+      if (event.origin !== window.location.origin && event.origin !== 'null') {
+        return;
+      }
+      
       if (event.data === 'blackhole-loaded') {
         console.log('Black hole simulation loaded successfully!');
         setIsLoaded(true);
@@ -32,16 +37,26 @@ const BlackHoleEntrance: React.FC = () => {
 
     window.addEventListener('message', handleMessage);
 
-    // Fallback timeout in case the message isn't received
-    const fallbackTimeout = setTimeout(() => {
+    // Enhanced fallback with multiple timeouts for deployment
+    const fallbackTimeout1 = setTimeout(() => {
+      console.log('⚠️ First fallback triggered - simulation may be loading slowly');
+      if (!isLoaded) {
+        setIsLoaded(true);
+        setTimeout(() => setShowUI(true), 500);
+      }
+    }, 3000);
+
+    const fallbackTimeout2 = setTimeout(() => {
+      console.log('⚠️ Final fallback triggered - forcing UI display');
       setIsLoaded(true);
-      setTimeout(() => setShowUI(true), 1000);
-    }, 5000);
+      setShowUI(true);
+    }, 8000);
 
     return () => {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('resize', checkMobile);
-      clearTimeout(fallbackTimeout);
+      clearTimeout(fallbackTimeout1);
+      clearTimeout(fallbackTimeout2);
     };
   }, []);
 
