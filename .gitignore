@@ -21,3 +21,20 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+
+# Keep these files for deployment:
+# !public/blackhole/
+# !vercel.json
+# !README.md
+# !VERCEL_DEPLOYMENT.md
+# !DEPLOYMENT_GUIDE.md
