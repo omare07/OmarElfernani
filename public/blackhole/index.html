@@ -208,48 +208,6 @@
             text-align: right;
         }
 
-        /* Toggle Parameters Button */
-        .toggle-parameters {
-            position: fixed;
-            top: 80px;
-            left: 20px;
-            background: rgba(255, 255, 0, 0.9);
-            color: #000;
-            padding: 8px 16px;
-            border: 2px solid #ffff00;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 1001;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
-        }
-
-        .toggle-parameters:hover {
-            background: rgba(255, 255, 0, 1.0);
-            box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-            transform: translateY(-1px);
-        }
-
-        .toggle-parameters:active {
-            transform: translateY(1px);
-            box-shadow: 0 0 5px rgba(255, 255, 0, 0.3);
-        }
-
-        /* Mobile responsive toggle button */
-        @media (max-width: 768px) {
-            .toggle-parameters {
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 12px 20px;
-                font-size: 14px;
-                border-radius: 8px;
-                border-width: 3px;
-            }
-        }
 
         /* Instructions removed - using React overlay */
 
@@ -285,10 +243,6 @@
 <body>
     <canvas id="canvas"></canvas>
 
-    <!-- Toggle Parameters Button -->
-    <div class="toggle-parameters" id="toggleParams" onclick="toggleControlPanel()">
-        <span id="toggleText">SHOW PARAMETERS</span>
-    </div>
 
     <div class="controls hidden" id="controlPanel">
         <div class="control-group">
@@ -494,20 +448,15 @@
             }
         }
 
-        // Enhanced toggle control panel with button text update
+        // Toggle control panel for double-tap
         function toggleControlPanel() {
             const panel = document.getElementById('controlPanel');
-            const toggleButton = document.getElementById('toggleParams');
-            const toggleText = document.getElementById('toggleText');
-            
             controlsVisible = !controlsVisible;
             
             if (controlsVisible) {
                 panel.classList.remove('hidden');
-                if (toggleText) toggleText.textContent = 'HIDE PARAMETERS';
             } else {
                 panel.classList.add('hidden');
-                if (toggleText) toggleText.textContent = 'SHOW PARAMETERS';
             }
         }
 
@@ -568,7 +517,7 @@
                         (window.innerWidth <= 768) ||
                         ('ontouchstart' in window);
 
-        // Enhanced mobile touch controls with camera rotation
+        // Enhanced mobile touch controls with smooth camera rotation
         if (isMobile) {
             let lastTouchTime = 0;
             let initialDistance = null;
@@ -576,6 +525,8 @@
             let isDragging = false;
             let lastTouchX = 0;
             let lastTouchY = 0;
+            let currentMouseX = 0.5; // Start at center
+            let currentMouseY = 0.5; // Start at center
             const canvas = document.getElementById('canvas');
             
             // Function to calculate distance between two touch points
@@ -603,10 +554,10 @@
                 }
             });
             
-            // Enhanced touch move - handle both camera rotation and pinch zoom
+            // Enhanced touch move - handle both smooth camera rotation and pinch zoom
             canvas.addEventListener('touchmove', function(e) {
-                if (e.touches.length === 1 && !isDragging && simulation) {
-                    // Single finger drag - camera rotation
+                if (e.touches.length === 1 && simulation) {
+                    // Single finger drag - smooth camera rotation
                     const touch = e.touches[0];
                     const rect = canvas.getBoundingClientRect();
                     const currentX = touch.clientX - rect.left;
@@ -617,17 +568,30 @@
                     const deltaY = currentY - lastTouchY;
                     
                     // Only start dragging if there's significant movement
-                    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                    if (!isDragging && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
                         isDragging = true;
                         e.preventDefault();
+                    }
+                    
+                    if (isDragging) {
+                        e.preventDefault();
                         
-                        // Update simulation mouse position for camera control
+                        // Smooth camera rotation using delta movement
                         if (simulation && simulation.params && simulation.params.mouseControl > 0) {
-                            const normalizedX = currentX / rect.width;
-                            const normalizedY = 1.0 - (currentY / rect.height);
+                            // Sensitivity factor for smooth rotation
+                            const sensitivity = 0.002;
                             
-                            simulation.mouseX = normalizedX;
-                            simulation.mouseY = normalizedY;
+                            // Update mouse position based on delta movement
+                            currentMouseX += deltaX * sensitivity;
+                            currentMouseY -= deltaY * sensitivity; // Invert Y for natural feel
+                            
+                            // Keep within bounds (wrap around for smooth continuous rotation)
+                            currentMouseX = Math.max(0, Math.min(1, currentMouseX));
+                            currentMouseY = Math.max(0, Math.min(1, currentMouseY));
+                            
+                            // Apply to simulation
+                            simulation.mouseX = currentMouseX;
+                            simulation.mouseY = currentMouseY;
                         }
                         
                         lastTouchX = currentX;
