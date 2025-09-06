@@ -76,7 +76,6 @@ const BlackHoleEntrance: React.FC = () => {
         className="absolute inset-0 w-full h-full border-0"
         title="Black Hole Simulation"
         style={{ zIndex: 1 }}
-        allow="webgl"
         animate={isBeingSucked ? {
           scale: [1, 1.2, 2, 5, 15],
           filter: ['brightness(1)', 'brightness(1.2)', 'brightness(2)', 'brightness(4)', 'brightness(8)'],

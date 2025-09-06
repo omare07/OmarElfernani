@@ -51,8 +51,8 @@ class BlackHoleSimulation {
 
         try {
             // Load shaders
-            const vertexShaderSource = await this.loadShader('shader/simple.vert');
-            const fragmentShaderSource = await this.loadShader('shader/blackhole_main.frag');
+            const vertexShaderSource = await this.loadShader('/blackhole/shader/simple.vert');
+            const fragmentShaderSource = await this.loadShader('/blackhole/shader/blackhole_main.frag');
             
             console.log('✅ Shaders loaded');
             
@@ -285,12 +285,12 @@ void main() {
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.galaxyTexture);
         
         const faces = [
-            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, url: 'assets/skybox_nebula_dark/right.png' },
-            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, url: 'assets/skybox_nebula_dark/left.png' },
-            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, url: 'assets/skybox_nebula_dark/top.png' },
-            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, url: 'assets/skybox_nebula_dark/bottom.png' },
-            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, url: 'assets/skybox_nebula_dark/front.png' },
-            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, url: 'assets/skybox_nebula_dark/back.png' }
+            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, url: '/blackhole/assets/skybox_nebula_dark/right.png' },
+            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, url: '/blackhole/assets/skybox_nebula_dark/left.png' },
+            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, url: '/blackhole/assets/skybox_nebula_dark/top.png' },
+            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, url: '/blackhole/assets/skybox_nebula_dark/bottom.png' },
+            { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, url: '/blackhole/assets/skybox_nebula_dark/front.png' },
+            { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, url: '/blackhole/assets/skybox_nebula_dark/back.png' }
         ];
         
         const loadPromises = faces.map(face => this.loadCubemapFace(face.target, face.url));
@@ -304,7 +304,7 @@ void main() {
         
         // Load actual color map
         console.log('📦 Loading color map texture...');
-        this.colorMapTexture = await this.loadTexture2D('assets/color_map.png');
+        this.colorMapTexture = await this.loadTexture2D('/blackhole/assets/color_map.png');
         
         console.log('✅ Successfully loaded actual asset textures!');
     }
@@ -448,22 +448,22 @@ void main() {
         
         // Load post-processing shaders
         try {
-            const passthroughVert = await this.loadShader('shader/simple.vert');
+            const passthroughVert = await this.loadShader('/blackhole/shader/simple.vert');
             
             // Bloom brightness pass
-            const brightnessFragSource = await this.loadShader('shader/bloom_brightness_pass.frag');
+            const brightnessFragSource = await this.loadShader('/blackhole/shader/bloom_brightness_pass.frag');
             this.programs.brightness = this.createProgram(passthroughVert, brightnessFragSource);
             
             // Bloom composite
-            const bloomCompositeFragSource = await this.loadShader('shader/bloom_composite.frag');
+            const bloomCompositeFragSource = await this.loadShader('/blackhole/shader/bloom_composite.frag');
             this.programs.bloomComposite = this.createProgram(passthroughVert, bloomCompositeFragSource);
             
             // Tone mapping
-            const tonemappingFragSource = await this.loadShader('shader/tonemapping.frag');
+            const tonemappingFragSource = await this.loadShader('/blackhole/shader/tonemapping.frag');
             this.programs.tonemapping = this.createProgram(passthroughVert, tonemappingFragSource);
             
             // Passthrough
-            const passthroughFragSource = await this.loadShader('shader/passthrough.frag');
+            const passthroughFragSource = await this.loadShader('/blackhole/shader/passthrough.frag');
             this.programs.passthrough = this.createProgram(passthroughVert, passthroughFragSource);
             
             console.log('✅ Post-processing pipeline created');
