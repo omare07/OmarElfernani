@@ -519,4 +519,27 @@ code {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   }
+
+  /* Mobile dark mode background rotation */
+  @media (max-width: 768px) {
+    body.dark-mode {
+      background: none; /* Remove background on mobile */
+    }
+
+    body.dark-mode::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('./pixaltedBlackHole.gif') center center no-repeat;
+      background-size: cover;
+      transform: rotate(90deg);
+      transform-origin: center center;
+      z-index: -2; /* Behind the overlay */
+      width: 100vw;
+      height: 100vh;
+    }
+  }
 }
