@@ -98,9 +98,9 @@ class BlackHoleSimulation {
         console.log(`🔧 Loading shader: ${path}`);
         
         try {
-            // Add cache busting parameter
-            const cacheBuster = Date.now();
-            const response = await fetch(`${path}?v=${cacheBuster}`);
+            // Add cache busting parameter with deployment timestamp
+            const cacheBuster = Date.now() + Math.random();
+            const response = await fetch(`${path}?v=${cacheBuster}&deploy=v2`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
