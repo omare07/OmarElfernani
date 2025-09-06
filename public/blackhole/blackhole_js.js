@@ -88,30 +88,68 @@ class BlackHoleSimulation {
     }
 
     async loadShader(path) {
+        console.log(`🔧 Loading shader: ${path}`);
+        
         try {
             // Add cache busting parameter
             const cacheBuster = Date.now();
             const response = await fetch(`${path}?v=${cacheBuster}`);
             if (!response.ok) {
-                throw new Error(`Failed to load ${path}: ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            return await response.text();
+            
+            const shaderSource = await response.text();
+            if (!shaderSource || shaderSource.trim().length === 0) {
+                throw new Error('Shader source is empty');
+            }
+            
+            console.log(`✅ Successfully loaded shader: ${path}`);
+            return shaderSource;
+            
         } catch (error) {
             console.error(`❌ Error loading shader ${path}:`, error);
             
-            // Fallback shaders if loading fails
+            // Enhanced fallback shaders with better error handling
             if (path.includes('simple.vert')) {
+                console.log('🔧 Using fallback vertex shader');
                 return `#version 300 es
-precision mediump float;
+precision highp float;
 in vec3 position;
 out vec2 uv;
 void main() {
     uv = (position.xy + 1.0) * 0.5;
     gl_Position = vec4(position, 1.0);
 }`;
-            } else {
+            } else if (path.includes('blackhole_main.frag')) {
+                console.log('🔧 Using enhanced fallback fragment shader');
                 return `#version 300 es
-precision mediump float;
+precision highp float;
+in vec2 uv;
+out vec4 fragColor;
+uniform float time;
+uniform vec2 resolution;
+uniform samplerCube galaxy;
+uniform sampler2D colorMap;
+
+void main() {
+    vec2 center = vec2(0.5, 0.5);
+    float dist = distance(uv, center);
+    
+    // Create a simple black hole effect
+    float blackHole = smoothstep(0.05, 0.15, dist);
+    float accretionDisk = smoothstep(0.15, 0.4, dist) * (1.0 - smoothstep(0.4, 0.6, dist));
+    
+    // Simple color gradient
+    vec3 diskColor = vec3(1.0, 0.5, 0.1) * accretionDisk;
+    vec3 spaceColor = texture(galaxy, vec3(uv - 0.5, 0.5)).rgb * blackHole;
+    
+    vec3 finalColor = diskColor + spaceColor * 0.5;
+    fragColor = vec4(finalColor, 1.0);
+}`;
+            } else {
+                console.log('🔧 Using basic fallback fragment shader');
+                return `#version 300 es
+precision highp float;
 in vec2 uv;
 out vec4 fragColor;
 uniform float time;
@@ -127,36 +165,72 @@ void main() {
     }
 
     createProgram(vertexSource, fragmentSource) {
+        console.log('🔧 Creating shader program...');
+        
         const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexSource);
         const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentSource);
         
         if (!vertexShader || !fragmentShader) {
+            console.error('❌ Failed to compile shaders');
+            // Clean up any successful shader
+            if (vertexShader) this.gl.deleteShader(vertexShader);
+            if (fragmentShader) this.gl.deleteShader(fragmentShader);
             return null;
         }
         
         const program = this.gl.createProgram();
+        if (!program) {
+            console.error('❌ Failed to create shader program');
+            this.gl.deleteShader(vertexShader);
+            this.gl.deleteShader(fragmentShader);
+            return null;
+        }
+        
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
         this.gl.linkProgram(program);
         
         if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-            console.error('Program link error:', this.gl.getProgramInfoLog(program));
+            const error = this.gl.getProgramInfoLog(program);
+            console.error('❌ Program link error:', error);
+            
+            // Clean up resources
+            this.gl.deleteProgram(program);
+            this.gl.deleteShader(vertexShader);
+            this.gl.deleteShader(fragmentShader);
             return null;
         }
         
+        // Clean up shaders after successful linking
+        this.gl.deleteShader(vertexShader);
+        this.gl.deleteShader(fragmentShader);
+        
+        console.log('✅ Shader program created and linked successfully');
         return program;
     }
 
     compileShader(type, source) {
         const shader = this.gl.createShader(type);
+        if (!shader) {
+            console.error('❌ Failed to create shader object');
+            return null;
+        }
+        
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
         
         if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            console.error('Shader compile error:', this.gl.getShaderInfoLog(shader));
+            const error = this.gl.getShaderInfoLog(shader);
+            const shaderType = type === this.gl.VERTEX_SHADER ? 'VERTEX' : 'FRAGMENT';
+            console.error(`❌ ${shaderType} shader compile error:`, error);
+            console.error('❌ Shader source:', source);
+            
+            // Clean up failed shader
+            this.gl.deleteShader(shader);
             return null;
         }
         
+        console.log(`✅ ${type === this.gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compiled successfully`);
         return shader;
     }
 
