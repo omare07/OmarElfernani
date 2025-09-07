@@ -11,7 +11,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!blackhole/|static/|favicon.ico|manifest.json|robots.txt).*)",
+      "source": "/((?!api/|blackhole/|static/|_next/|.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|pdf|zip|webp|mp4|mp3|webm|ogg|wav|flac|aac|wasm|data|json|xml|txt|md)$).*)",
       "destination": "/index.html"
     }
   ],
